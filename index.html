@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="css/jquerym/SOLEMP.min.css" />
     <link rel="stylesheet" href="css/jquerym/jquery.mobile.icons.min.css" />
     <link rel="stylesheet" href="css/jquerym/jquery.mobile.structure-1.4.5.min.css" /> 
-    <link rel="stylesheet" href="css/main.css" /> 
+    <link rel="stylesheet" media="screen and (max-width: 640px)" href="css/main.css" />
+    <link rel="stylesheet" media="screen and (min-width: 640px)" href="css/main.css" /> 
     <script src="js/jquery-1.12.0.min.js"></script> 
     <script src="js/jquery.mobile-1.4.5.min.js"></script> 
     <script src="js/angular.min.js"></script>"
@@ -24,77 +25,27 @@
                 </div><!-- /grid-b -->
             </div>
             <div class="row ui-content">
-                <div class="ui-field-contain">
+            <fieldset class="ui-grid-b">
+                <div class="ui-block-a" style="width:10%"></div>
+                <div class="ui-block-b" style="width:80%">
                     <label for="textinput-1">Usuario</label>
                     <input type="text" name="textinput-1" id="textinput-1" placeholder="Su usuario de SolEmp" value="">
-                    <br/>
-                     <label for="textinput-2">Clave</label>
-                    <input type="password" name="textinput-1" id="textinput-2" placeholder="Su clave de SolEmp" value="">
-                    <br/>
-                    <br/>
-                    <label for="submit-1" class="hide-obj"></label>
-                    <button type="submit" id="submit-1" class="ui-shadow ui-btn ui-corner-all ui-mini">Ingresar</button>                    
-                </div>            
-            </div>
-			
-			<div class="ui-grid-b ui-responsive ">
-				<div class="ui-block-a"><a href="#" class="ui-btn ui-shadow ui-corner-all">Grid B</a></div>
-				<div class="ui-block-b"><a href="#" class="ui-btn ui-shadow ui-corner-all">Grid B</a></div>
-				<div class="ui-block-c"><a href="#" class="ui-btn ui-shadow ui-corner-all">Grid B</a></div>
-			</div>
-			<div class="ui-grid-a ui-responsive">
-				<div class="ui-block-a"><a href="#" class="ui-btn ui-shadow ui-corner-all">Grid A</a></div>
-				<div class="ui-block-b"><a href="#" class="ui-btn ui-shadow ui-corner-all">Grid A</a></div>
-			</div>
-			<div class="ui-grid-solo">
-				<div class="ui-block-a"><a href="#" class="ui-btn ui-shadow ui-corner-all">Grid Solo</a></div>
-			</div>
-			<br>
-			<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-b">Outside the grid</a>
-			
-			
-			
-			
-			
-			
-			<div data-role="content">
-                <div class="grid-container">
-                    <div class="grid-row">
-                        <a href="index.htm">
-                            <img alt="alt..." src="images/logot.png" />
-                        </a>
-                        <a href="index.htm">
-                            <img alt="alt..." src="images/logot.png" />
-                        </a>
-                        <a href="index.htm">
-                            <img alt="alt..." src="images/logot.png" />
-                        </a>                        
-                    </div>
-                    <div class="grid-row">
-                        <a href="index.htm">
-                            <img alt="alt..." src="images/logot.png" />
-                        </a>
-                        <a href="index.htm">
-                            <img alt="alt..." src="images/logot.png" />
-                        </a>
-                        <a href="index.htm">
-                            <img alt="alt..." src="images/logot.png" />
-                        </a>                         
-                    </div>
-                    <div class="grid-row">
-                        <a href="index.htm">
-                            <img alt="alt..." src="images/logot.png" />
-                        </a>
-                        <a href="index.htm">
-                            <img alt="alt..." src="images/logot.png" />
-                        </a>
-                        <a href="index.htm">
-                            <img alt="alt..." src="images/logot.png" />
-                        </a>                         
-                    </div>  
                 </div>
+                <div class="ui-block-c" style="width:10%"></div>
+            </fieldset>
+            <fieldset class="ui-grid-b">
+                <div class="ui-block-a" style="width:10%"></div>
+                <div class="ui-block-b" style="width:80%">
+                    <label for="textinput-1">Contraseña</label>
+                    <input type="password" name="textinput-1" id="textinput-1" placeholder="Su clave de SolEmp" value="">
+                </div>
+                <div class="ui-block-c" style="width:10%"></div>
+            </fieldset>
+            <div class="ui-grid-b">
+                <div class="ui-block-a"></div>
+                <div class="ui-block-b"><div class="button-wrap"><button type="submit" id="submit-1" class="ui-shadow ui-btn ui-corner-all ui-mini">Ingresar</button></div></div>
+                <div class="ui-block-c"></div>
             </div>
-			
             <div data-role="footer" data-position="fixed">
                 <h2>&copy 2015 SolEmp</h2>
             </div>
