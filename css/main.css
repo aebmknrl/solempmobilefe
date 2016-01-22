@@ -41,3 +41,8 @@
         margin-right: 5px;
     }
 }
+
+.error-messages {
+   /* margin-left: 20px; */
+   color: #DA1514;
+}
