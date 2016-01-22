@@ -1,0 +1,21 @@
+.ui-grid-b img {
+    width  : 100%;
+    height : auto;
+}
+
+.row {
+    margin-top: 20px;
+}
+
+.ui-btn-left, .ui-btn-right, .ui-input-clear, .ui-btn-inline, .ui-grid-a .ui-btn, .ui-grid-b .ui-btn, .ui-grid-c .ui-btn, .ui-grid-d .ui-btn, .ui-grid-e .ui-btn, .ui-grid-solo .ui-btn {
+    margin-left: 20%;
+    margin-right: 5px;
+}
+
+.hide-obj {
+    display: none;
+}
+
+.margin-20 {
+    margin:20px; 
+}
