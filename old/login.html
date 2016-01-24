@@ -1,0 +1,45 @@
+        <!-- Start of first page -->
+        <div ng-controller="loginController as vm">
+                <div class="row">
+                    <div class="ui-grid-b">
+                        <div class="ui-block-a"></div>
+                        <div class="ui-block-b"><img src="images/logot.png"/></div>
+                        <div class="ui-block-c"></div>
+                    </div><!-- /grid-b -->
+                </div>
+            <form name="logInfrm" class="logInfrm" ng-submit="logInfrm.$valid && vm.checkLogIn()" novalidate>
+                <div class="row ui-content">
+                <div class="span-error" ng-show="vm.error"><span><b>Error:</b> Usuario o Clave incorrectos</span></div>
+                <fieldset class="ui-grid-b">
+                    <div class="ui-block-a" style="width:10%"></div>
+                    <div class="ui-block-b" style="width:80%">
+                        <label for="textinput-1">Usuario</label>
+                        <input type="text" name="textinput-1" id="textinput-1" placeholder="Su usuario de SolEmp" ng-model="vm.userName" value="" required>
+                        <ng-messages ng-if="logInfrm.$submitted" for="logInfrm['textinput-1'].$error">
+                            <ng-message class="error-messages" when="required" class="error-message"><h5>Este campo es requerido</h5></ng-message>
+                        </ng-messages>
+                    </div>
+                    <div class="ui-block-c" style="width:10%"></div>
+                </fieldset>
+                <fieldset class="ui-grid-b">
+                    <div class="ui-block-a" style="width:10%"></div>
+                    <div class="ui-block-b" style="width:80%">
+                        <label for="textinput-2">Clave</label>
+                        <input type="password" name="textinput-2" id="textinput-2" placeholder="Su clave de SolEmp" ng-model="vm.password" value="" required>
+                        <ng-messages ng-if="logInfrm.$submitted" for="logInfrm['textinput-2'].$error">
+                            <ng-message class="error-messages" when="required" class="error-message"><h5>Este campo es requerido</h5></ng-message>
+                        </ng-messages>
+                    </div>                        
+                    <div class="ui-block-c" style="width:10%"></div>
+                </fieldset>
+                    <fieldset class="ui-grid-b">
+                        <div class="ui-block-a"></div>
+                        <div class="ui-block-b"><div class="button-wrap"><button ng-disabled="!logInfrm.$valid" type="submit" id="submit-1" class="ui-shadow ui-btn ui-corner-all ui-mini" ng-click="">Ingresar</button></div></div>
+                        <div class="ui-block-c"></div>
+                    </fieldset>
+                </div>
+            </form>
+            <div data-role="footer" data-position="fixed">
+                <h2>&copy 2015 SolEmp</h2>
+            </div>
+       </div>

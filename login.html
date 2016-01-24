@@ -1,0 +1,30 @@
+        <!-- Start of first page -->
+        <div ng-controller="loginController as vm">
+            <div class="row">
+                <div class="col-sm-12 col-xs-12 logo-img text-center">
+                    <img class="logo" src="images/logot.png"/>
+                </div>
+            </div>
+            <div class="row">
+                <p ng-show="vm.error" class="bg-danger"><b>Error:</b> Usuario o Clave incorrectos</p>
+                <form name="logInfrm" class="logInfrm" ng-submit="logInfrm.$valid && vm.checkLogIn()" novalidate>
+                  <div class="form-group" show-errors='{showSuccess: true}'>
+                    <label for="textinput1">Usuario</label>
+                    <input type="text" class="form-control" name="textinput1" id="textinput1" placeholder="Su usuario de SolEmp" ng-model="vm.userName" value="" required>
+                    <ng-messages ng-if="logInfrm.$submitted" for="logInfrm.textinput1.$error" class="help-block">
+                            <ng-message class="error-messages" when="required" class="error-message help-block"><h5>Este campo es requerido</h5></ng-message>
+                    </ng-messages>
+                  </div>
+                  <div class="form-group" show-errors='{showSuccess: true}'>
+                    <label for="textinput2">Clave</label>
+                    <input type="password" class="form-control" name="textinput2" id="textinput2" ng-model="vm.password" placeholder="Clave de SolEmp" required>
+                    <ng-messages ng-if="logInfrm.$submitted" for="logInfrm.textinput2.$error" class="help-block">
+                            <ng-message class="error-messages" when="required" class="error-message"><h5>Este campo es requerido</h5></ng-message>
+                    </ng-messages>
+                  </div>
+                  <div class="col-sm-12 col-xs-12 text-center">
+                      <button type="submit" id="submit1" class="btn btn-warning" ng-click="startSubmit()">Ingresar</button>
+                  </div>
+                </form>
+            </div>       
+        </div>
