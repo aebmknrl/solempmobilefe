@@ -12,37 +12,17 @@ angular
         .state('menuhotels', {
            url: '/menuhotels',
             templateUrl: 'menuhotels.html'
-        })
-        .state('logout', {
-           url: '/logout',
-            templateUrl: 'logout.html'
         });   
 	})
 	.config(['showErrorsConfigProvider', function(showErrorsConfigProvider) {
 	  showErrorsConfigProvider.showSuccess(true);
 	}])
-	.config(function (localStorageServiceProvider) {
-  		localStorageServiceProvider
-  		.setPrefix('SolempApp')
-  		.setStorageType('sessionStorage')
-  		.setNotify(true, true);
-	})
-	.controller('mainController', ['loginFactory','$scope','$rootScope',function(loginFactory,$scope,$rootScope){
-		var mc = this;
-		mc.isloggedIn = loginFactory.isLogged();
-		$rootScope.isloggedIn = loginFactory.isLogged();
-	}])
-	.controller('loginController', ['$http','$scope','$location','$state','localStorageService','loginFactory','$rootScope', function ($http,$scope,$location,$state,localStorageService,loginFactory,$rootScope){
+	.controller('loginController', ['$http','$scope','$location','$state', function ($http,$scope,$location,$state){
 		var scope = this;
 		scope.userName = "";
 		scope.password = "";
 		scope.respuesta = "";
 		scope.error = false;
-
-		if (loginFactory.isLogged()) {
-			$state.go('menuhotels');
-		};
-
 		$scope.startSubmit = function() {
 			$scope.$broadcast('show-errors-check-validity');
 			if ($scope.logInfrm.$invalid) { return; }
@@ -50,37 +30,15 @@ angular
 			};
 
 		scope.checkLogIn = function(){
-			console.log(scope.userName.toString());
-			console.log(scope.password.toString());
-
-
 			return $http({
 	            method: "POST",
-	            url: "http://192.168.0.203/solempmobileWA/api/Users/getUser",
-	            headers: { 'Content-Type': 'application/json' },
-	            dataType: "json",
-	           	data: {
-	           			"userName" : scope.userName,
-	           			"Password" : scope.password
-	           		}
+	            url: "http://192.168.0.203/testWebApi/Token",
+	            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+	            data: 'username=' + encodeURIComponent(scope.userName) + '&password=' + encodeURIComponent(scope.password) + '&grant_type=password'
 	        }).success(function (data) {
 	            scope.respuesta = data;
 	            console.log(data);
-
-	            if (data.Result === "ERROR") {
-	            	if (data.Error.ErrorMsg === "Usuario o Password incorrecto!") {
-		            	scope.error = true;
-		            	scope.userName = "";
-						scope.password = "";
-						//Reiniciar valores de validacion
-						$scope.logInfrm.$setPristine();
-	            	}
-	            } else {
-   					localStorageService.set('userName', scope.userName);
-   					localStorageService.set('loggedIn', 'yes');
-	            	$rootScope.isloggedIn = true;
-	            	$state.go('menuhotels');
-	            };
+	           	$location('/solempmobile/menuhotels');
 	        }).error(function (data) {
 	            console.log(data);
 	            if (data.error === "invalid_grant" ) {
@@ -93,15 +51,6 @@ angular
 	            
 	        });
 		};
-	}])
-	.controller('logoutController', ['$scope','$rootScope','$state','localStorageService','loginFactory', function ($scope,$rootScope,$state,localStorageService,loginFactory){
-		console.log("Cerrando Session");
-		localStorageService.remove('loggedIn', 'userName');
-		$rootScope.isloggedIn = false;
-		$state.go('solempmobile');
-	}])
-	.controller('hmenuController', ['$scope','$rootScope','$state','localStorageService','loginFactory', function ($scope,$rootScope,$state,localStorageService,loginFactory){
-		
 	}])
 	.directive('showErrors', function() {
 	  return {
@@ -127,17 +76,4 @@ angular
 					});
 			    }
         	}
-	  })
-	.factory("loginFactory", ['localStorageService', function(localStorageService){
-    	var isloggedIn = false;
-	    var interfaz = {
-	        isLogged : function(){
-		        if (localStorageService.get('loggedIn') === 'yes') {
-					return true;
-				} else {
-					return false;
-				}
-			} 
-	    }
-	    return interfaz;
-	}])
+	  });

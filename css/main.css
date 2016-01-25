@@ -19,3 +19,19 @@
     padding-right: 50px;
     padding-left: 50px;
 }
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #656B7D;
+    color: #fff;
+}
+.container-footer {
+	margin: 20px 0;
+	font-size: x-small;
+}
+body {
+	margin-bottom: 60px;
+}
