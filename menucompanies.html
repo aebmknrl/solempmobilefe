@@ -1,0 +1,18 @@
+<div ng-controller="cmenuController as cmc">
+<div class="row">
+	<div class="col-sm-12 text-center text-page-title"><h3>Empresas</h3></div>
+</div>
+<div class="row">
+	<form name="companymenuFrm" ng-submit="cmc.companySelected()" novalidate>
+		<div class="form-group">
+			<label for="companySelect">Seleccione una Empresa:</label>
+			<select ng-init="cmc.selectedCompany = cmc.companies[0]" 
+			        ng-model="cmc.selectedCompany" 
+			        ng-options="company.nomempresa for company in cmc.companies" class="form-control" >
+			</select>
+		</div>
+		<div class="col-sm-12 text-center btn-next">
+			<button ng-disabled="cmc.onSelectCompany" type="submit" id="submit" class="btn btn-warning">Seleccionar</button>
+		</div>
+	</form>
+</div>

@@ -35,3 +35,10 @@
 body {
 	margin-bottom: 60px;
 }
+.text-page-title {
+    color: #E38D13;
+    margin-bottom: 30px;
+}
+.btn-next {
+    margin-top: 50px;
+}

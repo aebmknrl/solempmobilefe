@@ -1,3 +1,18 @@
-<div>
-    <h1>Hola desde menu</h1>
+<div ng-controller="hmenuController as hmc">
+<div class="row">
+	<div class="col-sm-12 text-center text-page-title"><h3>Hoteles</h3></div>
+</div>
+<div class="row">
+	<form name="hotelmenuFrm" ng-submit="hmc.hotelSelected()" novalidate>
+		<div class="form-group">
+			<label for="hotelSelect">Seleccione un hotel:</label>
+			<select ng-init="hmc.selectedHotel = hmc.hotels[0]" 
+			        ng-model="hmc.selectedHotel" 
+			        ng-options="hotel.name for hotel in hmc.hotels" class="form-control" >
+			</select>
+		</div>
+		<div class="col-sm-12 text-center btn-next">
+			<button ng-disabled="hmc.onSelectHotel" type="submit" id="submit" class="btn btn-warning">Seleccionar</button>
+		</div>
+	</form>
 </div>
