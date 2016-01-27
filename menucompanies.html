@@ -3,6 +3,9 @@
 	<div class="col-sm-12 text-center text-page-title"><h3>Empresas</h3></div>
 </div>
 <div class="row">
+	<div ng-show="cmc.hasError" class="alert alert-danger" role="alert">
+    	<strong>Error: </strong>{{cmc.errorMsg}}
+	</div>
 	<form name="companymenuFrm" ng-submit="cmc.companySelected()" novalidate>
 		<div class="form-group">
 			<label for="companySelect">Seleccione una Empresa:</label>

@@ -17,6 +17,18 @@ angular
            url: '/menucompanies',
             templateUrl: 'menucompanies.html'
         })
+        .state('mainmenu', {
+           url: '/mainmenu',
+            templateUrl: 'mainmenu.html'
+        })
+        .state('pays', {
+           url: '/pays',
+            templateUrl: 'pays.html'
+        })
+        .state('listofpays', {
+           url: '/listofpays',
+            templateUrl: 'listofpays.html'
+        })
         .state('logout', {
            url: '/logout',
             templateUrl: 'logout.html'
@@ -46,8 +58,10 @@ angular
 		scope.userName = "";
 		scope.password = "";
 		scope.respuesta = "";
+		scope.errorLogin = false
 		scope.error = false;
-		scope.onCheckLogin = false;
+		scope.errorMsg = "";
+			scope.onQuery = false;
 		if (loginFactory.isLogged()) {
 			$state.go('menuhotels');
 		};
@@ -61,7 +75,7 @@ angular
 		scope.checkLogIn = function(){
 			//Avisar que se está verificando el login
 			//para deshabilitar el botón de ingreso
-			scope.onCheckLogin = true;
+			scope.onQuery = true;
 
 
 			return $http({
@@ -79,13 +93,14 @@ angular
 
 	            if (data.Result === "ERROR") {
 	            	if (data.Error.ErrorMsg === "Usuario o Password incorrecto!") {
+		            	scope.errorMsg = "Error: Usuario o Clave incorrectos";
 		            	scope.error = true;
 		            	scope.userName = "";
 						scope.password = "";
 						//Reiniciar valores de validacion
 						$scope.logInfrm.$setPristine();
 						//habilitar botón de ingreso nuevamente
-						scope.onCheckLogin = false;
+						scope.onQuery = false;
 	            	}
 	            } else {
    					// escribo en el Session Storage la sesion y otros datos
@@ -98,11 +113,11 @@ angular
 					// Cargo las Compañías
 					localStorageService.set('companies',data.Data[0].Companies);
 					// Habilito boton de ingreso de nuevo
-					scope.onCheckLogin = false;
+					scope.onQuery = false;
 					// Cargo menu de hoteles
 	            	$state.go('menuhotels');
 	            };
-	        }).error(function (data) {
+	        }).error(function (data, status, headers, config) {
 	            console.log(data);
 	            if (data.error === "invalid_grant" ) {
 					scope.error = true;
@@ -111,10 +126,24 @@ angular
 					//Reiniciar valores de validacion
 					$scope.logInfrm.$setPristine();
 					// Habilito boton de ingreso de nuevo
-					scope.onCheckLogin = false;
-	            };
-	            
-	        });
+					
+	            } else {
+	            	scope.errorMsg = data.error;
+	            }
+	            scope.onQuery = false;
+	        }).catch(function(error) {
+				console.log(JSON.stringify(error));
+				if (error.status = -1) {
+					scope.errorMsg = "Error de conexión con el servidor";
+					scope.error = true;
+					scope.userName = "";
+					scope.password = "";
+					//Reiniciar valores de validacion
+					$scope.logInfrm.$setPristine();
+					// Habilito boton de ingreso de nuevo					
+				};
+				scope.onQuery = false;
+			});
 		};
 	}])
 	.controller('logoutController', ['$scope','$rootScope','$state','localStorageService','loginFactory', function ($scope,$rootScope,$state,localStorageService,loginFactory){
@@ -126,10 +155,13 @@ angular
 		$state.go('solempmobile');
 	}])
 	.controller('hmenuController', ['$scope','$rootScope','$state','localStorageService','loginFactory', function ($scope,$rootScope,$state,localStorageService,loginFactory){
+		if (!loginFactory.isLogged()) {
+			$state.go('solempmobile');
+		};
 		hmc = this; 
 		hmc.hotels = localStorageService.get('hotels');
 		hmc.selectedHotel = "";
-		hmc.onSelectHotel = false;
+		hmc.onQuery = false;
 		//Aviso que estoy en la página de Hotels
 		$rootScope.actualPage = "hotels";
 		//Al seleccionar hotel:
@@ -137,21 +169,26 @@ angular
 			//Aviso que estoy procesando
 			//Deshabilito el boton para 
 			//evitar otro request
-			hmc.onSelectHotel = true;
+			hmc.onQuery = true;
 			// Guardo el hotel seleccionado
 			localStorageService.set('hotel', hmc.selectedHotel);
 			// Paso a seleccion de empresa
 			$state.go("menucompanies");
 			//Habilito de nuevo el botón
 			//Por si se regresa a Hoteles
-			hmc.onSelectHotel = false;
+			hmc.onQuery = false;
 		};
 	}])
-	.controller('cmenuController', ['$scope','$rootScope','$state','localStorageService','loginFactory', function ($scope,$rootScope,$state,localStorageService,loginFactory){
+	.controller('cmenuController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL){
+		if (!loginFactory.isLogged()) {
+			$state.go('solempmobile');
+		};
 		cmc = this; 
 		cmc.companies = localStorageService.get('companies');
 		cmc.selectedCompany = "";
-		cmc.onSelectCompany = false;
+		cmc.onQuery = false;
+		cmc.hasError = false;
+		cmc.errorMsg = "";
 		//Aviso que estoy en la página de Companies
 		$rootScope.actualPage = "companies";
 		//Al seleccionar hotel:
@@ -159,31 +196,212 @@ angular
 			//Aviso que estoy procesando
 			//Deshabilito el boton para 
 			//evitar otro request
-			cmc.onSelectCompany = true;
+			cmc.onQuery = true;
 			// Guardo el hotel seleccionado
 			localStorageService.set('company', cmc.selectedCompany);
 			// Paso al Menú Principal
 			
+			//Obtengo valores para pasar a API
+			var userName = localStorageService.get('userName');
+			var companyID = localStorageService.get('company').idempresa;
 			return $http({
 	            method: "POST",
 	            url: solempWebApiURL.url + "/Users/getDataForMainScreen",
 	            headers: { 'Content-Type': 'application/json' },
 	            dataType: "json",
 	           	data: {
-	           			"userName" : scope.userName,
-	           			"Password" : scope.password
+	           			"userName" : userName,
+	           			"companyID" : companyID 
 	           		}
 		        }).success(function (data) {
-		            
+		            console.log(data);
+		            if (data.Result === "ERROR") {
+						cmc.hasError = true;
+		            	cmc.errorMsg = data.Error.ErrorMsg;
+		            } else {
+			            // Si hay elementos a mostrar
+			            // guardo
+			            localStorageService.set('mainData', data.Data[0]);
+			            // Ir al menú principal
+			            $state.go("mainmenu");
+		            }
+					//Habilito el boton nuevamente
+		            cmc.onQuery = false;
 		        }).error(function (data) {
 		            
 		        });
-			};
 
 			//Habilito de nuevo el botón
 			//Por si se regresa a Hoteles
 			cmc.onSelectCompany = false;
 		};
+	}])
+	.controller('mainmenuController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL){
+		if (!loginFactory.isLogged()) {
+			$state.go('solempmobile');
+		};
+		mmc = this;
+		//Aviso que estoy en la página de mainmenu
+		$rootScope.actualPage = "mainmenu";
+		//Variable para avisar que se esta consultando
+		mmc.onQuery = false;
+
+		// Variables de control de error
+		mmc.hasError = false;
+		mmc.errorMsg = "";
+
+		//Saber si aprueba Pagos Pendientes
+		mmc.apruebapp = localStorageService.get('mainData').apruebapp;
+		//Programaciones de Pago Pendientes
+		mmc.pppendientes = localStorageService.get('mainData').pppendientes;
+
+		//Saber si aprueba Ordenes de Compra
+		mmc.apruebaord = localStorageService.get('mainData').apruebaord;
+		//Ordenes de Compra
+		mmc.ordpendientes = localStorageService.get('mainData').ordpendientes;
+
+		//Saber si aprueba Requisiciones de Almacén
+		mmc.apruebareq = localStorageService.get('mainData').apruebareq;
+		//Requisiciones de Almacén
+		mmc.reqpendientes = localStorageService.get('mainData').reqpendientes;
+
+		mmc.getPays = function(){
+			mmc.onQuery = true;
+			return $http({
+	            method: "POST",
+	            url: solempWebApiURL.url + "/Users/getProgPagByStatus",
+	            headers: { 'Content-Type': 'application/json' },
+	            dataType: "json",
+	           	data: {
+					  "status": "TODOS",
+					  "companyID": localStorageService.get('company').idempresa
+					}
+		        }).success(function (data) {
+		            console.log(data);
+		            if (data.Result === "ERROR") {
+						mmc.hasError = true;
+		            	mmc.errorMsg = data.Error.ErrorMsg;
+		            } else {
+			            // Si hay elementos a mostrar
+			            // guardo
+			            //Programaciones Aprobadas
+			            localStorageService.set('pppAprobadas', data.Data[0]);
+			            // Programaciones Por Aprobar
+			            localStorageService.set('pppPorAprobar', data.Data[1]);
+			            // Programaciones Rechazadas
+			            localStorageService.set('pppRechazadas', data.Data[2]);
+			            // Ir al menú principal
+			            $state.go("pays");
+		            }
+					//Habilito el boton nuevamente
+		            mmc.onQuery = false;
+		        }).error(function (data) {
+		            
+		        });
+		};
+	}])
+	.controller('payController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL){
+		if (!loginFactory.isLogged()) {
+			$state.go('solempmobile');
+		};
+			payc = this;
+			//Aviso que estoy en la página de pays
+			$rootScope.actualPage = "pays";
+
+			// Inicializar variables de error
+			payc.hasError = false;
+		    payc.errorMsg = "";
+
+			// Variable de bloquear botones cuando se hace consulta
+			payc.onQuery = false;
+
+			payc.poraprobar = localStorageService.get('pppAprobadas').tot;
+			payc.aprobadas = localStorageService.get('pppPorAprobar').tot;
+			payc.rechazadas = localStorageService.get('pppRechazadas').tot;
+
+			payc.getPP = function(PPType){
+				var pptype = PPType;
+				// Bloquear botones cuando se hace consulta
+				payc.onQuery = true;
+
+				// Guardo el tipo de PP elegido
+				localStorageService.set('PPType', pptype);
+				
+				$state.go("listofpays");
+				payc.onQuery = false;
+				//connectAPI();			
+			};
+			
+			function connectAPI(){
+			  return $http({
+		            method: "POST",
+		            url: solempWebApiURL.url + "/Users/listProgPagByStatus",
+		            headers: { 'Content-Type': 'application/json' },
+		            dataType: "json",
+		           	data: {
+							"status": localStorageService.get('PPType'),
+							"companyID": localStorageService.get('company').idempresa
+							}
+			        }).success(function (data) {
+			            console.log(data);
+			            if (data.Result === "ERROR") {
+							payc.hasError = true;
+			            	payc.errorMsg = data.Error.ErrorMsg;
+			            } else {
+			            	//console.log(data);
+				            // Si hay elementos a mostrar
+				            // guardo
+				            localStorageService.set('paylistdata', data.Data);
+				            // Ir al menú principal
+				            // Voy a mostrar la lista de pago
+							$state.go("listofpays");
+			            }
+						//Habilito el boton nuevamente
+			            payc.onQuery = false;
+			        }).error(function (data) {
+			            
+			        });
+			};
+	}])
+	.controller('listofpayController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL){
+		if (!loginFactory.isLogged()) {
+			$state.go('solempmobile');
+		};
+			lpc = this;
+			lpc.listofpays = [];
+			// Variables para el control de errores
+			lpc.hasError = false;
+			lpc.errorMsg = "";
+			// Variable para avisar que se esta realizando un query
+			lpc.onQuery = true;
+			//Aviso que estoy en la página de pays
+			$rootScope.actualPage = "listofpays";
+			
+
+			$http.post(solempWebApiURL.url + "/Users/listProgPagByStatus", 
+				{
+					"status": localStorageService.get('PPType'),
+					"companyID": localStorageService.get('company').idempresa
+				}).then(function(data){
+			            if (data.Result === "ERROR") {
+							lpc.hasError = true;
+			            	lpc.errorMsg = data.Error.ErrorMsg;
+			            } else {
+				            // Si hay elementos a mostrar
+				            // guardo
+				            lpc.listofpays = data.data.Data;
+			            }
+						//Habilito el boton nuevamente
+			            lpc.onQuery = false;
+				}).catch(function(error) {
+			  		console.log(JSON.stringify(error));
+			});
+
+
+	
+
+			
+
 	}])
 	.directive('showErrors', function() {
 	  return {

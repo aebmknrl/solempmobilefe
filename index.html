@@ -33,9 +33,18 @@
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav" ng-if="actualPage == 'companies'">
-                <li><a ui-sref="menuhotels">Ir a Hoteles</a></li>
+            <ul class="nav navbar-nav" ng-if="(actualPage == 'companies') || (actualPage == 'mainmenu') || (actualPage == 'pays') || (actualPage == 'listofpays')">
+                <li><a ui-sref="menuhotels"><span class="glyphicon glyphicon-tower" aria-hidden="true"></span> Ir a Hoteles</a></li>
             </ul>
+            <ul class="nav navbar-nav" ng-if="(actualPage == 'mainmenu') || (actualPage == 'pays') || (actualPage == 'listofpays')">
+                <li><a ui-sref="menucompanies"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> Ir a Empresas</a></li>
+            </ul>
+            <ul class="nav navbar-nav" ng-if="(actualPage == 'pays') || (actualPage == 'listofpays')">
+                <li><a ui-sref="mainmenu"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Menu Principal</a></li>
+            </ul>
+            <ul class="nav navbar-nav" ng-if="(actualPage == 'listofpays')">
+                <li><a ui-sref="listofpays"><span class="glyphicon glyphicon-usd" aria-hidden="true"></span> Pagos</a></li>
+            </ul>             
             <ul class="nav navbar-nav">
                 <li><a ui-sref="logout">Cerrar Sesion</a></li>
             </ul>
@@ -46,11 +55,7 @@
         <div class="container main-container">
             <div ui-view></div>
         </div>
-        <footer class="footer">
-      <div class="container container-footer">
-        <p class="">&copy 2015 - New Vision Systems Information, C.A.</p>
-      </div>
-    </footer>
+
     </body>
     <link rel="stylesheet" href="css/loading-bar.min.css" />
     <script src="js/loading-bar.min.js"></script>  

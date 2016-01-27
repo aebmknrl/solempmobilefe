@@ -7,7 +7,7 @@
             </div>
             <div class="row">
               <div ng-show="vm.error" class="alert alert-danger" role="alert">
-                <strong>Error: </strong>Usuario o Clave incorrectos
+                <strong>Error: </strong>{{vm.errorMsg}}
               </div>
                 <form name="logInfrm" class="logInfrm" ng-submit="logInfrm.$valid && vm.checkLogIn()" novalidate>
                   <div class="form-group" show-errors>
@@ -25,7 +25,7 @@
                     </ng-messages>
                   </div>
                   <div class="col-sm-12 col-xs-12 text-center">
-                      <button ng-disabled="vm.onCheckLogin" type="submit" id="submit1" class="btn btn-warning" ng-click="startSubmit()">Ingresar</button>
+                      <button ng-disabled="vm.onQuery" type="submit" id="submit1" class="btn btn-warning" ng-click="startSubmit()">Ingresar</button>
                   </div>
                 </form>
             </div>       

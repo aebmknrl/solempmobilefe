@@ -1,0 +1,15 @@
+<div ng-controller="payController as payc ">
+	<div class="row">
+		<div class="col-sm-12 text-center text-page-title"><h3>Pagos</h3></div>
+	</div>
+	<div class="row">
+		<div class="list-group">
+		  <button ng-disabled="(payc.isChecking)" type="button" class="list-group-item" ng-click="payc.getPP('AP')"><span class="badge">{{payc.poraprobar}}</span> Por Aprobar</button>
+		  <button ng-disabled="(payc.isChecking)" type="button" class="list-group-item" ng-click="payc.getPP('PA')"><span class="badge">{{payc.aprobadas}}</span> Aprobadas</button>
+		  <button ng-disabled="(payc.isChecking)" type="button" class="list-group-item" ng-click="payc.getPP('RE')"><span class="badge">{{payc.rechazadas}}</span> Rechazadas</button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12 text-center text-page-bottom"><h5>Por favor, seleccione una opción para continuar.</h5></div>
+	</div>
+</div>

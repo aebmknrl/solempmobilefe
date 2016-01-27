@@ -1,0 +1,29 @@
+<div ng-controller="listofpayController as lpc">
+	<div class="row">
+		<div class="col-sm-12 text-center text-page-title"><h3>Lista de Pagos</h3></div>
+	</div>
+	<div class="row">
+		<div ng-show="lpc.hasError" class="alert alert-danger" role="alert">
+	    	<strong>Error: </strong>{{lpc.errorMsg}}
+		</div>
+	</div>
+
+
+	<div ng-repeat="pay in lpc.listofpays">
+		<div class="row list-group-item list-group-item-warning row-list ">
+		<div class="col-xs-12 text-super-smaller text-list-title"><strong>{{pay.comment}}</strong></div>
+		</div>
+		<div class="row row-list">
+			<div class="col-xs-6 text-super-smaller"><span class="glyphicon glyphicon-tag" aria-hidden="true"></span> <strong>{{pay.idprogpag}}</strong></div>
+			<div class="col-xs-6 text-super-smaller text-right">25/01/2016</div>
+		</div>
+		<div class="row row-list">
+			<div class="col-xs-6 text-super-smaller"><span class="glyphicon glyphicon-flag" aria-hidden="true"></span> {{pay.nomtipo}}</div>
+		</div>
+		<div class="row row-list">
+			<div class="col-xs-6 text-super-smaller">({{pay.totaldocs}}) Documento(s)</div>
+			<div class="col-xs-6 text-super-smaller text-right text-list-title"><strong>{{pay.txttotalpagocon | currency : "Bs."}}</strong></div>
+		</div>
+		<hr/>
+	</div>
+</div>

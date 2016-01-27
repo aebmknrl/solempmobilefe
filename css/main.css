@@ -20,6 +20,10 @@
     padding-left: 50px;
 }
 
+.btn-default .badge {
+    background-color: #E38D13;
+}
+
 .footer {
     position: absolute;
     bottom: 0;
@@ -41,4 +45,25 @@ body {
 }
 .btn-next {
     margin-top: 50px;
+}
+
+.text-page-bottom {
+    color: #E38D13;
+    margin-top: 30px;
+}
+.text-super-smaller {
+    font-size: smaller;
+}
+.text-list-title {
+    color: #E48D13;
+}
+
+.row-list {
+    margin-right: -50px;
+    margin-left: -50px;
+    margin-bottom: 5px;
+}
+
+a .change-link {
+    color: black;
 }
