@@ -367,6 +367,9 @@ angular
 		if (!loginFactory.isLogged()) {
 			$state.go('solempmobile');
 		};
+			// Variable para poner el fondo en gris mientras se carga
+			$rootScope.grayOutScreen = true;
+
 			lpc = this;
 			lpc.listofpays = [];
 			// Variables para el control de errores
@@ -383,7 +386,7 @@ angular
 					"status": localStorageService.get('PPType'),
 					"companyID": localStorageService.get('company').idempresa
 				}).then(function(data){
-			            if (data.Result === "ERROR") {
+			            if (data.data.Data.Result === "ERROR") {
 							lpc.hasError = true;
 			            	lpc.errorMsg = data.Error.ErrorMsg;
 			            } else {
@@ -396,12 +399,10 @@ angular
 				}).catch(function(error) {
 			  		console.log(JSON.stringify(error));
 			});
-
-
-	
-
-			
-
+		$scope.$on('cfpLoadingBar:completed', function(){
+        console.debug('Loading Finished');
+        $rootScope.grayOutScreen = false;
+      });
 	}])
 	.directive('showErrors', function() {
 	  return {

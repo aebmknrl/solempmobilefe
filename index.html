@@ -16,7 +16,7 @@
     <script src="js/showErrors.min.js"></script>
     <script src="js/angular-local-storage.min.js"></script>
     </head>
-    <body ng-app="solempApp" ng-controller="mainController as mc">
+    <body ng-app="solempApp" ng-controller="mainController as mc" ng-class="{'overlay' : grayOutScreen == true}">
 
     <nav class="navbar navbar-default" ng-show="isloggedIn">
       <div class="container-fluid">

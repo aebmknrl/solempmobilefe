@@ -67,3 +67,7 @@ body {
 a .change-link {
     color: black;
 }
+.overlay {
+    background: #e9e9e9;         
+    opacity: 0.5;
+}
