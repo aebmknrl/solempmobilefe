@@ -1,8 +1,8 @@
 <div ng-controller="cmenuController as cmc">
-<div class="row">
+<div class="row first-row">
 	<div class="col-sm-12 text-center text-page-title"><h3>Empresas</h3></div>
 </div>
-<div class="row">
+<div class="row first-row">
 	<div ng-show="cmc.hasError" class="alert alert-danger" role="alert">
     	<strong>Error: </strong>{{cmc.errorMsg}}
 	</div>
@@ -15,7 +15,7 @@
 			</select>
 		</div>
 		<div class="col-sm-12 text-center btn-next">
-			<button ng-disabled="cmc.onSelectCompany" type="submit" id="submit" class="btn btn-warning">Seleccionar</button>
+			<button ng-disabled="cmc.onQuery" type="submit" id="submit" class="btn btn-warning">Seleccionar</button>
 		</div>
 	</form>
 </div>

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css" /> 
     <link rel="stylesheet" href="css/bootstrap-theme.min.css" />
     <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/angular-busy.min.css" />
     <script src="js/jquery-1.12.0.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/angular.min.js"></script>
@@ -15,47 +16,56 @@
     <script src="js/angular-ui-router.min.js"></script>
     <script src="js/showErrors.min.js"></script>
     <script src="js/angular-local-storage.min.js"></script>
+
+    <script src="js/angular-busy.min.js"></script>
+
+
     </head>
-    <body ng-app="solempApp" ng-controller="mainController as mc" ng-class="{'overlay' : grayOutScreen == true}" ng-cloak>
+    <body ng-app="solempApp" ng-controller="mainController as mc" ng-cloak cg-busy="{promise:apiQuery,message:'Cargando...',backdrop:true}">
 
-    <nav class="navbar navbar-default" ng-show="isloggedIn">
-      <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#"><img width="40" height="20" src="images/logot.png"/></a>
-        </div>
+        <nav class="navbar navbar-default navbar-fixed-top" ng-show="isloggedIn">
+          <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed " data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#"><img width="40" height="20" src="images/logot.png"/></a>
+            </div>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav" ng-if="(actualPage == 'companies') || (actualPage == 'mainmenu') || (actualPage == 'pays') || (actualPage == 'listofpays')">
-                <li><a ui-sref="menuhotels"><span class="glyphicon glyphicon-tower" aria-hidden="true"></span> Ir a Hoteles</a></li>
-            </ul>
-            <ul class="nav navbar-nav" ng-if="(actualPage == 'mainmenu') || (actualPage == 'pays') || (actualPage == 'listofpays')">
-                <li><a ui-sref="menucompanies"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> Ir a Empresas</a></li>
-            </ul>
-            <ul class="nav navbar-nav" ng-if="(actualPage == 'pays') || (actualPage == 'listofpays')">
-                <li><a ui-sref="mainmenu"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Menu Principal</a></li>
-            </ul>
-            <ul class="nav navbar-nav" ng-if="(actualPage == 'listofpays')">
-                <li><a ui-sref="listofpays"><span class="glyphicon glyphicon-usd" aria-hidden="true"></span> Pagos</a></li>
-            </ul>             
-            <ul class="nav navbar-nav">
-                <li><a ui-sref="logout">Cerrar Sesion</a></li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
-      </div><!-- /.container-fluid -->
-    </nav>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav" ng-if="(actualPage == 'companies') || (actualPage == 'mainmenu') || (actualPage == 'pays') || (actualPage == 'listofpays')">
+                    <li><a ui-sref="menuhotels"><span class="glyphicon glyphicon-tower" aria-hidden="true"></span> Ir a Hoteles</a></li>
+                </ul>
+                <ul class="nav navbar-nav" ng-if="(actualPage == 'mainmenu') || (actualPage == 'pays') || (actualPage == 'listofpays')">
+                    <li><a ui-sref="menucompanies"><span class="glyphicon glyphicon-briefcase" aria-hidden="true"></span> Ir a Empresas</a></li>
+                </ul>
+                <ul class="nav navbar-nav" ng-if="(actualPage == 'pays') || (actualPage == 'listofpays')">
+                    <li><a ui-sref="mainmenu"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Menu Principal</a></li>
+                </ul>
+                <ul class="nav navbar-nav" ng-if="(actualPage == 'listofpays')">
+                    <li><a ui-sref="pays"><span class="glyphicon glyphicon-usd" aria-hidden="true"></span> Pagos</a></li>
+                </ul>             
+                <ul class="nav navbar-nav">
+                    <li><a ui-sref="logout"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span> Cerrar Sesion</a></li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+          </div><!-- /.container-fluid -->
+        </nav>
         <!-- Start of first page -->
         <div class="container main-container">
             <div ui-view></div>
         </div>
-
+        <!-- Footer -->
+        <div class="navbar navbar-default navbar-fixed-bottom parent-footer">
+            <div class="container child-footer">
+            <div class="text-super-smaller text-center ">2015 - New Vision System Information, C.A. RIF: J-30832780-8</div>
+            </div>
+        </div>
     </body>
     <link rel="stylesheet" href="css/loading-bar.min.css" />
     <script src="js/loading-bar.min.js"></script>  

@@ -1,10 +1,13 @@
 <div ng-controller="mainmenuController as mmc">
-	<div class="row">
+	<div class="row first-row">
 		<div class="col-sm-12 text-center text-page-title"><h3>Menú Principal</h3></div>
 	</div>
-	<div class="row">
+	<div class="row first-row">
+		<div ng-show="mmc.hasError" class="alert alert-danger" role="alert">
+    		<strong>Error: </strong>{{mmc.errorMsg}}
+		</div>
 		<div class="list-group">
-		  <button ng-disabled="(!mmc.apruebapp) || (mmc.isChecking)" type="button" class="list-group-item" ng-click="mmc.getPays()"><span class="badge">{{mmc.pppendientes}}</span> Programaciones de Pago</button>
+		  <button ng-disabled="(!mmc.apruebapp) || (mmc.onQuery)" type="button" class="list-group-item" ng-click="mmc.getPays()"><span class="badge">{{mmc.pppendientes}}</span> Programaciones de Pago</button>
 		  <button ng-disabled="!mmc.apruebaord" type="button" class="list-group-item"><span class="badge">{{mmc.ordpendientes}}</span> Ordenes de Compra</button>
 		  <button ng-disabled="!mmc.apruebareq" type="button" class="list-group-item"><span class="badge">{{mmc.reqpendientes}}</span> Requisiciones de Almacén</button>
 		</div>
