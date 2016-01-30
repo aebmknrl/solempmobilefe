@@ -74,41 +74,40 @@ angular
 			 //Avisar que se está verificando el login
 			//para deshabilitar el botón de ingreso
 			scope.onQuery = true;
-			$rootScope.apiQuery = $http.post(solempWebApiURL.url + "/Users/getUser", 
-				{
-					"userName" : scope.userName,
-	           		"Password" : scope.password
-				}).then(function(response){
-					if (response.data.Result === "ERROR") {
-		            	if (response.data.Error.ErrorMsg === "Usuario o Password incorrecto!") {
-			            	scope.errorMsg = "Error: Usuario o Clave incorrectos";
-			            	scope.error = true;
-			            	scope.userName = "";
-							scope.password = "";
-							//Reiniciar valores de validacion
-							$scope.logInfrm.$setPristine();
-							//habilitar botón de ingreso nuevamente
-							scope.onQuery = false;
-		            	}
-		           	} else {
-	   					// escribo en el Session Storage la sesion y otros datos
-	   					localStorageService.set('userName', scope.userName);
-	   					localStorageService.set('loggedIn', 'yes');
-		            	// aviso que esta logueado el usuario
-		            	$rootScope.isloggedIn = true;
-						// Cargo los hoteles
-						localStorageService.set('hotels',response.data.Data[0].Hotels);
-						// Cargo las Compañías
-						localStorageService.set('companies',response.data.Data[0].Companies);
-						// Habilito boton de ingreso de nuevo
-						scope.onQuery = false;
-						// Cargo menu de hoteles
-		            	$state.go('menuhotels');
-		            };
+			$rootScope.apiQuery = $http.post("http://192.168.111.56/solempmobileWA/token",
+					 "userName=" + encodeURIComponent(scope.userName) +
+                     "&password=" + encodeURIComponent(scope.password) +
+                     "&grant_type=password"
+				).then(function(response){
+					console.log(JSON.stringify(response));
+	   				// escribo en el Session Storage la sesion y otros datos
+	   				localStorageService.set('userName', scope.userName);
+	   				localStorageService.set('loggedIn', 'yes');
+		            // aviso que esta logueado el usuario
+		            $rootScope.isloggedIn = true;
+					// Guardar Token
+					localStorageService.set('token',response.data.access_token)
+
+					// Cargo los hoteles
+					//localStorageService.set('hotels',response.data.Data[0].Hotels);
+					// Cargo las Compañías
+					//localStorageService.set('companies',response.data.Data[0].Companies);
+					// Habilito boton de ingreso de nuevo
+					scope.onQuery = false;
+					Cargo menu de hoteles
+		            $state.go('menuhotels');
 				}).catch(function(error) {
 			  		//console.log(JSON.stringify(error));
-			        if (error.status = -1) {
+			        if (error.status == -1) {
 						scope.errorMsg = "Error de conexión con el servidor";
+						scope.error = true;
+						scope.userName = "";
+						scope.password = "";
+						//Reiniciar valores de validacion
+						$scope.logInfrm.$setPristine();
+					}
+					if (error.status == 400) {
+						scope.errorMsg = "Usuario o clave incorrecta";
 						scope.error = true;
 						scope.userName = "";
 						scope.password = "";
@@ -138,6 +137,45 @@ angular
 			hmc.onQuery = false;
 			//Aviso que estoy en la página de Hotels
 			$rootScope.actualPage = "hotels";
+
+			$rootScope.apiQuery = $http.post(solempWebApiURL.url + "/Users/getDataForMainScreen", 
+				{
+					"userName" : userName,
+		       		"companyID" : companyID 
+				}).then(function(response){
+					if (response.data.Result === "ERROR") {
+						mmc.hasError = true;
+			           	mmc.errorMsg = response.data.Error.ErrorMsg;
+			        } else {
+				        // Si hay elementos a mostrar
+				        // guardo
+						//Saber si aprueba Pagos Pendientes
+						mmc.apruebapp = response.data.Data[0].apruebapp;
+						//Programaciones de Pago Pendientes
+						mmc.pppendientes = response.data.Data[0].pppendientes;
+
+						//Saber si aprueba Ordenes de Compra
+						mmc.apruebaord = response.data.Data[0].apruebaord;
+						//Ordenes de Compra
+						mmc.ordpendientes = response.data.Data[0].ordpendientes;
+
+						//Saber si aprueba Requisiciones de Almacén
+						mmc.apruebareq = response.data.Data[0].apruebareq;
+						//Requisiciones de Almacén
+						mmc.reqpendientes = response.data.Data[0].reqpendientes;
+			        }
+						//Habilito el boton nuevamente
+			            mmc.onQuery = false;
+			    }).catch(function(error) {
+			       	//Habilito el boton nuevamente
+		        	mmc.onQuery = false;
+					mmc.hasError = true;
+					mmc.errorMsg = "Error de cód. status : " + error.status;
+		        });
+
+
+
+
 			//Al seleccionar hotel:
 			hmc.hotelSelected = function() {
 				//Aviso que estoy procesando
@@ -190,7 +228,7 @@ angular
 			//Aviso que estoy en la página de mainmenu
 			$rootScope.actualPage = "mainmenu";
 			//Variable para avisar que se esta consultando
-			mmc.onQuery = false;
+			mmc.onQuery = true;
 			// Variables de control de error
 			mmc.hasError = false;
 			mmc.errorMsg = "";
@@ -234,7 +272,6 @@ angular
 		        });	
 			mmc.getPays = function(){
 				$state.go("pays");
-				mmc.onQuery = false;
 			};
 		}
 
