@@ -1,5 +1,5 @@
 angular
-	.module('solempApp',['ngMessages', 'cgBusy','ui.router', 'ui.bootstrap.showErrors','LocalStorageModule'])
+	.module('solempApp',['ngMessages', 'cgBusy','ui.router', 'ui.bootstrap.showErrors','LocalStorageModule','ngToast'])
 	.config(function($stateProvider, $urlRouterProvider) {
 	    $urlRouterProvider.otherwise('/solempmobile');
     	$stateProvider
@@ -43,6 +43,14 @@ angular
   		.setStorageType('sessionStorage')
   		.setNotify(true, true);
 	})
+	.config(['ngToastProvider', function(ngToast) {
+    ngToast.configure({
+      horizontalPosition: 'center',
+      maxNumber: 1,
+      animation: 'fade',
+      dismissButton : true
+    });
+  }])
 	.constant("solempWebApiURL", {
         "url": "http://192.168.111.56/solempmobileWA/api",
         "port": "80"
@@ -53,7 +61,7 @@ angular
 		$rootScope.isloggedIn = loginFactory.isLogged();
 		$rootScope.actualPage = "main";
 	}])
-	.controller('loginController', ['$http','$scope','$location','$state','localStorageService','loginFactory','$rootScope','solempWebApiURL', function ($http,$scope,$location,$state,localStorageService,loginFactory,$rootScope,solempWebApiURL){
+	.controller('loginController', ['$http','$scope','$location','$state','localStorageService','loginFactory','$rootScope','solempWebApiURL','ShowErrorMessages', function ($http,$scope,$location,$state,localStorageService,loginFactory,$rootScope,solempWebApiURL,ShowErrorMessages){
 		var scope = this;
 		scope.userName = "";
 		scope.password = "";
@@ -61,7 +69,8 @@ angular
 		scope.errorLogin = false
 		scope.error = false;
 		scope.errorMsg = "";
-			scope.onQuery = false;
+		scope.onQuery = false;
+		$rootScope.actualPage = "main";
 		if (loginFactory.isLogged()) {
 			$state.go('menuhotels');
 		};
@@ -80,56 +89,82 @@ angular
                      "&grant_type=password"
 				).then(function(response){
 					console.log(JSON.stringify(response));
-	   				// escribo en el Session Storage la sesion y otros datos
-	   				localStorageService.set('userName', scope.userName);
-	   				localStorageService.set('loggedIn', 'yes');
-		            // aviso que esta logueado el usuario
-		            $rootScope.isloggedIn = true;
-					// Guardar Token
-					localStorageService.set('token',response.data.access_token)
+					$rootScope.apiQuery = $http.post("http://192.168.111.56/solempmobileWA/api/Users/getUser",
+						{
+							"userName" : scope.userName,
+							"password" : scope.password
+						},
+						{
+							headers : {
+								"Authorization" : "Bearer " + response.data.access_token
+							}
+						}
+					).then (function(responseAux){
+						// escribo en el Session Storage la sesion y otros datos
+		   				localStorageService.set('userName', scope.userName);
+						// Guardar Token
+						localStorageService.set('token',response.data.access_token)
+						// aviso que esta logueado el usuario
+						$rootScope.isloggedIn = loginFactory.isLogged();
+						
+						// Cargo los hoteles
+						localStorageService.set('hotels',responseAux.data.Data[0].Hotels);
+						// Cargo las Compañías
+						localStorageService.set('companies',responseAux.data.Data[0].Companies);
+						//Cargo menu de hoteles
+			            $state.go('menuhotels');
 
-					// Cargo los hoteles
-					//localStorageService.set('hotels',response.data.Data[0].Hotels);
-					// Cargo las Compañías
-					//localStorageService.set('companies',response.data.Data[0].Companies);
-					// Habilito boton de ingreso de nuevo
-					scope.onQuery = false;
-					Cargo menu de hoteles
-		            $state.go('menuhotels');
+					}).catch(function(errorAux){
+						if (errorAux.status == 401) {
+						scope.errorMsg = "Sin autorización";
+						scope.error = true;
+						scope.userName = "";
+						scope.password = "";
+						//Reiniciar valores de validacion
+						$scope.logInfrm.$setPristine();
+						}
+					})
 				}).catch(function(error) {
 			  		//console.log(JSON.stringify(error));
 			        if (error.status == -1) {
-						scope.errorMsg = "Error de conexión con el servidor";
-						scope.error = true;
+			        	ShowErrorMessages.ShowErrorMessage("Error de conexión con el servidor");
+						//scope.errorMsg = "Error de conexión con el servidor";
+						//scope.error = true;
 						scope.userName = "";
 						scope.password = "";
 						//Reiniciar valores de validacion
 						$scope.logInfrm.$setPristine();
+						return;
 					}
 					if (error.status == 400) {
-						scope.errorMsg = "Usuario o clave incorrecta";
-						scope.error = true;
+						ShowErrorMessages.ShowErrorMessage("Usuario o clave incorrectos");
+						//scope.errorMsg = "Usuario o clave incorrecta";
+						//scope.error = true;
 						scope.userName = "";
 						scope.password = "";
 						//Reiniciar valores de validacion
 						$scope.logInfrm.$setPristine();
+						return;
 					}
-					// Habilito boton de ingreso de nuevo
-					scope.onQuery = false;
+					ShowErrorMessages.ShowErrorMessage("Error de cód. status : " + error.status);
 				});
+				// Habilito boton de ingreso de nuevo
+				scope.onQuery = false;
+				//Reiniciar valores de validacion
+				$scope.logInfrm.$setPristine();
 			};
 	}])
-	.controller('logoutController', ['$scope','$rootScope','$state','localStorageService','loginFactory', function ($scope,$rootScope,$state,localStorageService,loginFactory){
+	.controller('logoutController', ['$scope','$rootScope','$state','localStorageService','loginFactory','ShowErrorMessages', function ($scope,$rootScope,$state,localStorageService,loginFactory,ShowErrorMessages){
 		console.log("Cerrando Session");
 		localStorageService.clearAll();
-		$rootScope.isloggedIn = false;
+		$rootScope.isloggedIn = loginFactory.isLogged();
 		//Aviso que estoy en la página main
-		$rootScope.actualPage = "main";
-		$state.go('solempmobile');
+		$state.go('solempmobile');		
 	}])
-	.controller('hmenuController', ['$scope','$rootScope','$state','localStorageService','loginFactory', function ($scope,$rootScope,$state,localStorageService,loginFactory){
+	.controller('hmenuController', ['$scope','$rootScope','$state','localStorageService','loginFactory','ShowErrorMessages', function ($scope,$rootScope,$state,localStorageService,loginFactory,ShowErrorMessages){
 		if (!loginFactory.isLogged()) {
-			$state.go('solempmobile');
+			$state.go('logout');
+			ShowErrorMessages.ShowErrorMessage("Debe iniciar sesión primero");
 		} else {
 			hmc = this; 
 			hmc.hotels = localStorageService.get('hotels');
@@ -137,44 +172,6 @@ angular
 			hmc.onQuery = false;
 			//Aviso que estoy en la página de Hotels
 			$rootScope.actualPage = "hotels";
-
-			$rootScope.apiQuery = $http.post(solempWebApiURL.url + "/Users/getDataForMainScreen", 
-				{
-					"userName" : userName,
-		       		"companyID" : companyID 
-				}).then(function(response){
-					if (response.data.Result === "ERROR") {
-						mmc.hasError = true;
-			           	mmc.errorMsg = response.data.Error.ErrorMsg;
-			        } else {
-				        // Si hay elementos a mostrar
-				        // guardo
-						//Saber si aprueba Pagos Pendientes
-						mmc.apruebapp = response.data.Data[0].apruebapp;
-						//Programaciones de Pago Pendientes
-						mmc.pppendientes = response.data.Data[0].pppendientes;
-
-						//Saber si aprueba Ordenes de Compra
-						mmc.apruebaord = response.data.Data[0].apruebaord;
-						//Ordenes de Compra
-						mmc.ordpendientes = response.data.Data[0].ordpendientes;
-
-						//Saber si aprueba Requisiciones de Almacén
-						mmc.apruebareq = response.data.Data[0].apruebareq;
-						//Requisiciones de Almacén
-						mmc.reqpendientes = response.data.Data[0].reqpendientes;
-			        }
-						//Habilito el boton nuevamente
-			            mmc.onQuery = false;
-			    }).catch(function(error) {
-			       	//Habilito el boton nuevamente
-		        	mmc.onQuery = false;
-					mmc.hasError = true;
-					mmc.errorMsg = "Error de cód. status : " + error.status;
-		        });
-
-
-
 
 			//Al seleccionar hotel:
 			hmc.hotelSelected = function() {
@@ -192,9 +189,10 @@ angular
 			};
 		};
 	}])
-	.controller('cmenuController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL){
+	.controller('cmenuController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL','ShowErrorMessages', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL,ShowErrorMessages){
 		if (!loginFactory.isLogged()) {
-			$state.go('solempmobile');
+			$state.go('logout');
+			ShowErrorMessages.ShowErrorMessage("Debe iniciar sesión primero");			
 		} else {
 			cmc = this; 
 			cmc.companies = localStorageService.get('companies');
@@ -220,9 +218,10 @@ angular
 		}
 
 	}])
-	.controller('mainmenuController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL){
+	.controller('mainmenuController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL','ShowErrorMessages', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL,ShowErrorMessages){
 		if (!loginFactory.isLogged()) {
-			$state.go('solempmobile');
+			$state.go('logout');
+			ShowErrorMessages.ShowErrorMessage("Debe iniciar sesión primero");			
 		} else {
 			mmc = this;
 			//Aviso que estoy en la página de mainmenu
@@ -240,7 +239,13 @@ angular
 				{
 					"userName" : userName,
 		       		"companyID" : companyID 
-				}).then(function(response){
+				},
+				{
+					headers : {
+						"Authorization" : "Bearer " + localStorageService.get('token')
+					}
+				}
+				).then(function(response){
 					if (response.data.Result === "ERROR") {
 						mmc.hasError = true;
 			           	mmc.errorMsg = response.data.Error.ErrorMsg;
@@ -265,10 +270,16 @@ angular
 						//Habilito el boton nuevamente
 			            mmc.onQuery = false;
 			    }).catch(function(error) {
+			       	if (error.status == 401) {
+						$state.go("logout");
+						ShowErrorMessages.ShowErrorMessage("Debe iniciar sesión primero");			
+						return;
+					}
 			       	//Habilito el boton nuevamente
 		        	mmc.onQuery = false;
-					mmc.hasError = true;
-					mmc.errorMsg = "Error de cód. status : " + error.status;
+					//mmc.hasError = true;
+					//mmc.errorMsg = "Error de cód. status : " + error.status;
+					ShowErrorMessages.ShowErrorMessage("Error de cód. status : " + error.status);
 		        });	
 			mmc.getPays = function(){
 				$state.go("pays");
@@ -276,9 +287,10 @@ angular
 		}
 
 	}])
-	.controller('payController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL){
+	.controller('payController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL','ShowErrorMessages', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL,ShowErrorMessages){
 		if (!loginFactory.isLogged()) {
-			$state.go('solempmobile');
+			$state.go('logout');
+			ShowErrorMessages.ShowErrorMessage("Debe iniciar sesión primero");
 		} else {
 			payc = this;
 			//Aviso que estoy en la página de pays
@@ -293,6 +305,11 @@ angular
 				{
 					"status": "TODOS",
 					"companyID": localStorageService.get('company').idempresa
+				},
+				{
+					headers : {
+						"Authorization" : "Bearer " + localStorageService.get('token')
+					}
 				}).then(function(response){
 					if (response.data.Result === "ERROR") {
 						payc.hasError = true;
@@ -312,10 +329,16 @@ angular
 						//Habilito el boton nuevamente
 			            payc.onQuery = false;
 			    }).catch(function(error) {
+					if (error.status == 401) {
+						$state.go("logout");
+						ShowErrorMessages.ShowErrorMessage("Debe iniciar sesión primero");
+						return;						
+					}
 			       	//Habilito el boton nuevamente
 		        	payc.onQuery = false;
-					payc.hasError = true;
-					payc.errorMsg = "Error de cód. status : " + error.status;
+					//payc.hasError = true;
+					//payc.errorMsg = "Error de cód. status : " + error.status;
+					ShowErrorMessages.ShowErrorMessage("Error de cód. status : " + error.status);
 		        });
 			payc.getPP = function(PPType){
 				var pptype = PPType;
@@ -360,9 +383,10 @@ angular
 			    });
 			};
 	}])
-	.controller('listofpayController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL){
+	.controller('listofpayController', ['$scope','$rootScope','$state','localStorageService','loginFactory','$http','solempWebApiURL', 'ShowErrorMessages', function ($scope,$rootScope,$state,localStorageService,loginFactory,$http,solempWebApiURL,ShowErrorMessages){
 		if (!loginFactory.isLogged()) {
-			$state.go('solempmobile');
+			$state.go('logout');
+			ShowErrorMessages.ShowErrorMessage("Debe iniciar sesión primero");
 		} else {
 			lpc = this;
 			lpc.listofpays = [];
@@ -377,6 +401,11 @@ angular
 				{
 					"status": localStorageService.get('PPType'),
 					"companyID": localStorageService.get('company').idempresa
+				},
+				{
+					headers : {
+						"Authorization" : "Bearer " + localStorageService.get('token')
+					}
 				}).then(function(data){
 			            if (data.data.Data.Result === "ERROR") {
 							lpc.hasError = true;
@@ -390,11 +419,13 @@ angular
 						//Habilito el boton nuevamente
 			            lpc.onQuery = false;
 				}).catch(function(error) {
-			  		console.log(JSON.stringify(error));
+			  			if (error.status == 401) {
+						$state.go("logout");
+						ShowErrorMessages.ShowErrorMessage("Debe iniciar sesión primero");
+						return;
+					}
+					ShowErrorMessages.ShowErrorMessage("Error de cód. status : " + error.status);
 				});
-				// $scope.$on('cfpLoadingBar:completed', function(){
-			 	// console.debug('Loading Finished');	
-    			// });
       	}
 	}])
 	.directive('showErrors', function() {
@@ -426,12 +457,21 @@ angular
     	var isloggedIn = false;
 	    var interfaz = {
 	        isLogged : function(){
-		        if (localStorageService.get('loggedIn') === 'yes') {
+		        if (typeof localStorageService.get('token') !== "undefined" && localStorageService.get('token') !== null){
+					console.log("Esta logueado, el token es " + localStorageService.get('token'));
 					return true;
 				} else {
+					console.log("No Esta logueado.");
 					return false;
 				}
-			} 
+			}
 	    }
 	    return interfaz;
+	}])
+	.service('ShowErrorMessages',['$rootScope','ngToast', function($rootScope,ngToast){
+		this.ShowErrorMessage = function(message){
+			  var myToastMsg = ngToast.danger({
+			  content: message
+			});
+		}
 	}])
