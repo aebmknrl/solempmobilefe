@@ -88,7 +88,6 @@ angular
                      "&password=" + encodeURIComponent(scope.password) +
                      "&grant_type=password"
 				).then(function(response){
-					console.log(JSON.stringify(response));
 					$rootScope.apiQuery = $http.post("http://192.168.111.56/solempmobileWA/api/Users/getUser",
 						{
 							"userName" : scope.userName,
@@ -458,10 +457,8 @@ angular
 	    var interfaz = {
 	        isLogged : function(){
 		        if (typeof localStorageService.get('token') !== "undefined" && localStorageService.get('token') !== null){
-					console.log("Esta logueado, el token es " + localStorageService.get('token'));
 					return true;
 				} else {
-					console.log("No Esta logueado.");
 					return false;
 				}
 			}
